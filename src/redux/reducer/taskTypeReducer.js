@@ -11,6 +11,7 @@ const taskTypeReducer = createSlice({
       get_list_tasktype: (state, action) => {
          state.listTaskTypes = action.payload;
       },
+      
    },
 });
 

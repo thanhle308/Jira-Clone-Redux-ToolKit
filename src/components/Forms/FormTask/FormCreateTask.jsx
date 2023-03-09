@@ -148,9 +148,7 @@ function FormCreateTask(props) {
                             defaultValue={30}
                             value={timeTracking.timeTrackingSpent}
                             max={Number(timeTracking.timeTrackingSpent) + Number(timeTracking.timeTrackingRemaining)}
-                        // tooltip={{
-                        //     open: true,
-                        // }}
+                      
                         />
                         <div className="row">
                             <div className="col-6 text-left font-weight-bold">{timeTracking.timeTrackingSpent}h logged</div>

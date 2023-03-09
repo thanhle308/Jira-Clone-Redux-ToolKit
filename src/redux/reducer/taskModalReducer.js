@@ -31,12 +31,17 @@ const taskModalReducer = createSlice({
     name: 'taskModalReducer',
     initialState,
     reducers: {
-        // get_list_tasktype: (state, action) => {
-        //     state.listTaskTypes = action.payload;
-        // },
+        get_task_detail: (state, action) => {
+            state.taskDetailModal = action.payload;
+        },
+        change_task_modal: (state, action) => {
+            const {name , value} = action.payload;
+            console.log(name, value);
+            state.taskDetailModal = {...state.taskDetailModal,[name]:value};
+         }
     },
 });
 
-export const { } = taskModalReducer.actions;
+export const {get_task_detail , change_task_modal} = taskModalReducer.actions;
 
 export default taskModalReducer.reducer;

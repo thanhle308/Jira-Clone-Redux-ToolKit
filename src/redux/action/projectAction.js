@@ -23,6 +23,7 @@ import {
 import { notifiFunction } from '../../utils/Notification/notification';
 import { displayLoading, hideLoading } from '../reducer/loadingReducer';
 import { get_list_project, get_project_detail } from '../reducer/projectReducer';
+import { get_task_detail } from '../reducer/taskModalReducer';
 
 export const getAllProjectAction = () => {
    return async (dispatch) => {
@@ -54,6 +55,7 @@ export const getTaskDetailAction = (id) => {
    return async (dispatch) => {
       try {
          let result = await getTaskDetailService(id);
+         await dispatch(get_task_detail(result));
       } catch (error) {
          console.log(error);
       }
@@ -182,7 +184,10 @@ export const updateProjectAction = (id, data) => {
 export const updateStatusAction = (data) => {
    return async (dispatch) => {
       try {
+         console.log('data', data)
          let result = await updateStatusService(data);
+         await dispatch(getTaskDetailAction(data.taskId))
+         await dispatch(getProjectDetailAction(data.projectId))
       } catch (error) {
          console.log(error);
       }
