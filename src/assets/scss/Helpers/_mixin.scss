@@ -1,0 +1,39 @@
+@mixin mixinText($color, $fs, $fw, $lh) {
+   color: $color;
+   font-size: $fs;
+   font-weight: $fw;
+   line-height: $lh;
+}
+
+@mixin mixinButton($fs, $pd, $bg-color, $br) {
+   font-size: $fs;
+   padding: $pd;
+   background-color: $bg-color;
+   border-radius: $br;
+}
+
+$breakpoints: (
+   'extra-large': 1200px,
+   'large': 992px,
+   'medium': 768px,
+   'small': 576px,
+);
+
+@mixin responsive($screen) {
+   @if (map-has-key($map: $breakpoints, $key: $screen)) {
+      $value: map-get(
+         $map: $breakpoints,
+         $key: $screen,
+      );
+      @media screen and (max-width: $value) {
+         @content;
+      }
+   }
+}
+
+$breakpoints: (
+   'extra-large': 1200px,
+   'large': 992px,
+   'medium': 768px,
+   'small': 576px,
+);
