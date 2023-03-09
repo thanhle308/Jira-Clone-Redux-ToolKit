@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Col, Row, Tag, Space, Button, Modal } from 'antd';
+import { Card, Col, Row, Tag, Space, Button, Modal, Divider, Select } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { getProjectDetailAction } from '../../redux/action/projectAction';
 import parse from 'html-react-parser';
@@ -39,7 +39,40 @@ const ProjectDetail = (props) => {
         const jsxDescription = parse(taskDetailModal.description);
         return jsxDescription;
     }
-
+    const options = [
+        {
+            value: 'gold',
+        },
+        {
+            value: 'lime',
+        },
+        {
+            value: 'green',
+        },
+        {
+            value: 'cyan',
+        },
+    ];
+    const tagRender = (props) => {
+        const { label, value, closable, onClose } = props;
+        const onPreventMouseDown = (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+        };
+        return (
+            <Tag
+                color='green'
+                onMouseDown={onPreventMouseDown}
+                closable={closable}
+                onClose={onClose}
+                style={{
+                    marginRight: 3,
+                }}
+            >
+                {label}
+            </Tag>
+        );
+    };
 
 
 
@@ -56,7 +89,6 @@ const ProjectDetail = (props) => {
             </Row>
             <Modal
                 title="Modal 1000px width"
-                centered
                 open={open}
                 onOk={() => setOpen(false)}
                 onCancel={() => setOpen(false)}
@@ -66,25 +98,56 @@ const ProjectDetail = (props) => {
                     <Col span={16}>
                         <Row>
                             <Col span={24}>
-                                <h5>Discription</h5>
+                                <Divider orientation="left">Discription</Divider>
                                 {renderTaskDescription()}
                             </Col>
                         </Row>
                     </Col>
                     <Col span={8}>
                         <Col span={24}>
-                            <div className="form-group">
-                                <h5>Status</h5>
-                                <select name='statusId' className='form-control' value={listStatus} >
-                                    {listStatus.map((status, index) => {
-                                        return <option key={index} value={status.statusId}>
-                                            {status.statusName}
-                                        </option>
-                                    })}
-                                </select>
-                            </div>
-
+                            <Divider orientation="left">Status</Divider>
+                            <Select
+                                showSearch
+                                style={{
+                                    width: 250,
+                                }}
+                                value={taskDetailModal.statusId}
+                                optionFilterProp="children"
+                                filterOption={(input, option) => (option?.label ?? '').includes(input)}
+                                filterSort={(optionA, optionB) =>
+                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                }
+                                options={listStatus.map((status, index) => {
+                                    return {
+                                        value: status.statusId,
+                                        label: status.statusName
+                                    }
+                                })
+                                }
+                            />
                         </Col>
+
+                        <Col span={24}>
+                            <Divider orientation="left">Assignees</Divider>
+                            <Select
+                                mode="multiple"
+                                showArrow
+                                tagRender={tagRender}
+                                defaultValue={['gold', 'cyan']}
+                                style={{
+                                    width: '100%',
+                                }}
+                                // options={taskDetailModal}
+                                onSelect={(value,options) =>{
+                                    console.log(value)
+                                }}
+                                onDeselect	={(value,options) =>{
+                                    console.log(value)
+                                }}
+                            />
+                        </Col>
+
+                        <Col span={24}></Col>
                     </Col>
                 </Row>
             </Modal>
