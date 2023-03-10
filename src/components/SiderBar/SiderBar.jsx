@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { open_drawer_create_task } from '../../redux/reducer/drawerHOCReducer';
-import jira from '../../assets/img/jira.png'
+import jira from '../../assets/img/jira.png';
 const { Header, Content, Footer, Sider } = Layout;
 
 function getItem(label, key, icon, children) {
@@ -18,6 +18,7 @@ function getItem(label, key, icon, children) {
   };
 }
 const SiderBar = () => {
+ 
   const dispatch = useDispatch();
   const items = [
     getItem(<NavLink to='/'>Dashboard</NavLink>, '1', <PieChartOutlined />, '', ''),
@@ -45,7 +46,7 @@ const SiderBar = () => {
             margin: 10,
             backgroundImage: `url(${jira})`,
             backgroundRepeat:'no-repeat',
-            backgroundSize:'cover'
+            backgroundSize:'contain'
           }}
         />
         <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} />

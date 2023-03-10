@@ -3,6 +3,7 @@ import { withFormik } from 'formik';
 import * as Yup from 'yup';
 import { connect } from 'react-redux';
 import { signInAction, signUpAction } from '../../redux/action/userAction'
+import { NavLink } from 'react-router-dom';
 const Register = (props) => {
    const {
       values,
@@ -18,36 +19,40 @@ const Register = (props) => {
             <h2>Register</h2>
             <form onSubmit={handleSubmit}>
                <div className="user-box">
-                  <input onChange={handleChange} onBlur={handleBlur} type="text" name="email" />
-                  <label>Email</label>
+                  <input onChange={handleChange} onBlur={handleBlur} type="text" name="email" className='mt-3' />
+                  <label >Email</label>
                   <div>{errors.email ? (<div className='text-danger mb-3'>{errors.email}</div>) : null} </div>
                </div>
 
                <div className="user-box">
-                  <input onChange={handleChange} onBlur={handleBlur} type="password" name="password" />
+                  <input onChange={handleChange} onBlur={handleBlur} type="password" name="password" className='mt-3' />
                   <label>Password</label>
                   <div>{errors.password ? (<div className='text-danger mb-3'>{errors.password}</div>) : null} </div>
                </div>
                <div className="user-box">
-                  <input onChange={handleChange} onBlur={handleBlur} type="text" name="name" />
+                  <input onChange={handleChange} onBlur={handleBlur} type="text" name="name" className='mt-3'/>
                   <label>Name</label>
                   <div>{errors.name ? (<div className='text-danger mb-3'>{errors.name}</div>) : null} </div>
                </div>
                <div className="user-box">
-                  <input onChange={handleChange} onBlur={handleBlur} type="text" name="phoneNumber" />
+                  <input onChange={handleChange} onBlur={handleBlur} type="text" name="phoneNumber" className='mt-3'/>
                   <label>Phone Number</label>
                   <div>{errors.phoneNumber ? (<div className='text-danger mb-3'>{errors.phoneNumber}</div>) : null} </div>
                </div>
 
-
                <button className='btn' type='submit'>
-                  <a>
-                     <span />
-                     <span />
-                     <span />
-                     <span />
-                     Submit
-                  </a>
+                  <span />
+                  <span />
+                  <span />
+                  <span />
+                  Submit
+               </button>
+               <button className='btn ml-5' type='submit'>
+                  <span />
+                  <span />
+                  <span />
+                  <span />
+                  <NavLink to='/login' style={{ textDecoration: 'none' }}>Login</NavLink>
                </button>
             </form>
          </div>
@@ -72,7 +77,7 @@ const RegisterWithFormik = withFormik({
    handleSubmit: (values, { props, setSubmitting }) => {
       props.dispatch(signUpAction(values));
       console.log(values)
-      
+
    },
 
    displayName: 'RegisterWithFormik',

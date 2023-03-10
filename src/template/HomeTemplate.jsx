@@ -1,17 +1,49 @@
 import React from 'react';
-import { Redirect, Route } from 'react-router-dom';
+import { NavLink, Redirect, Route } from 'react-router-dom';
 import SiderBar from '../components/SiderBar/SiderBar';
-import { Breadcrumb, Layout, Menu, theme } from 'antd';
-import { ACCESS_TOKEN } from '../utils/settings';
+import { Breadcrumb, Layout, Menu, theme, Col, Dropdown, Button, Avatar, Space } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
+import { ACCESS_TOKEN, USER_LOGIN } from '../utils/settings';
 const { Header, Content, Footer, Sider } = Layout;
 
 const HomeTemplate = (props) => {
+   const thisUser = JSON.parse(localStorage.getItem(USER_LOGIN));
+   // console.log('thisUser', thisUser)
    const {
       token: { colorBgContainer },
    } = theme.useToken();
+
    if (!localStorage.getItem(ACCESS_TOKEN)) {
-      return <Redirect to='/login'/>
+      return <Redirect to='/login' />
    }
+   const items = [
+      {
+         key: '1',
+         label: (
+            <a target="_blank" rel="noopener noreferrer" href="https://www.antgroup.com">
+               1st menu item
+            </a>
+         ),
+      },
+      {
+         key: '2',
+         label: (
+            <a target="_blank" rel="noopener noreferrer" href="https://www.aliyun.com">
+              Profile
+            </a>
+         ),
+      },
+      {
+         key: '3',
+         label: (
+            <NavLink  to='' onClick={() => {
+               localStorage.removeItem(ACCESS_TOKEN);
+            }}>
+               LogOut
+            </NavLink>
+         ),
+      },
+   ];
    return (
       <Route
          exact
@@ -30,7 +62,20 @@ const HomeTemplate = (props) => {
                            padding: 0,
                            background: colorBgContainer,
                         }}
-                     />
+                     >
+                        <Col span={6} offset={18}>
+                           <Space wrap size={16}>
+                              <Dropdown
+                                 menu={{
+                                    items,
+                                 }}
+                                 placement="bottom"
+                              >
+                                 <Avatar  size={40} src={<img src={thisUser.avatar} alt="avatar" />} />
+                              </Dropdown>
+                           </Space>
+                        </Col>
+                     </Header>
                      <Content
                         style={{
                            margin: '0 16px',

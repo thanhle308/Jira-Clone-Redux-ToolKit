@@ -5,7 +5,9 @@ import { getProjectDetailAction, getTaskDetailAction, updateStatusAction } from 
 import parse from 'html-react-parser';
 import { getAllStatusAction } from '../../redux/action/statusAction';
 import { getAllPriorityAction } from '../../redux/action/priorityAction';
-import { change_task_modal } from '../../redux/reducer/taskModalReducer';
+import { change_members_detail_task, change_task_modal } from '../../redux/reducer/taskModalReducer';
+import { Editor } from '@tinymce/tinymce-react';
+import { CloseOutlined } from '@ant-design/icons/lib/icons';
 
 
 const ProjectDetail = (props) => {
@@ -13,7 +15,11 @@ const ProjectDetail = (props) => {
     const { taskDetailModal } = useSelector(state => state.taskModalReducer)
     const { listStatus } = useSelector(state => state.statusReducer);
     const { listPriority } = useSelector(state => state.priorityReducer);
-    // console.log({ listStatus })
+
+    const [visibleEditor, setvisibleEditor] = useState(false);
+    const [historyContent, sethistoryContent] = useState(taskDetailModal.description);
+    const [content, setContent] = useState(taskDetailModal.description);
+    // console.log('taskDetailModal', taskDetailModal)
     const dispatch = useDispatch();
 
 
@@ -27,6 +33,7 @@ const ProjectDetail = (props) => {
                     {colum.lstTaskDeTail.length > 0 ? (colum.lstTaskDeTail.map((task, index) => {
                         return <Card className='mb-2' onClick={() => {
                             dispatch(getTaskDetailAction(task.taskId))
+
                             setOpen(true)
                         }} key={index} title={task.taskName} bordered={true} style={{ backgroundColor: '#FFFFFF', cursor: 'pointer' }}>
                             <Space size={[0, 8]} wrap>
@@ -39,11 +46,50 @@ const ProjectDetail = (props) => {
             </Col>
         })
     }
-
-
     const renderTaskDescription = () => {
         const jsxDescription = parse(taskDetailModal.description);
-        return jsxDescription;
+        return <div >
+            {visibleEditor ? <div>
+                <Editor
+                    name='description'
+                    initialValue={taskDetailModal.description}
+                    init={{
+                        height: 500,
+                        menubar: false,
+                        plugins: [
+                            'advlist autolink lists link image charmap print preview anchor',
+                            'searchreplace visualblocks code fullscreen',
+                            'insertdatetime media table paste code help wordcount'
+                        ],
+                        toolbar: 'undo redo | formatselect | ' +
+                            'bold italic backcolor | alignleft aligncenter ' +
+                            'alignright alignjustify | bullist numlist outdent indent | ' +
+                            'removeformat | help',
+                        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+                    }}
+                    onEditorChange={(content, editor) => {
+                        setContent(content);
+                    }}
+
+                />
+                <Button className='btn btn-primary m-2' onClick={() => {
+                    const name = 'description';
+                    const value = content;
+                    dispatch(change_task_modal({ name, value }));
+                    sethistoryContent(content);
+                    setvisibleEditor(false)
+                }}>Save</Button>
+                <Button className='btn btn-primary m-2' onClick={() => {
+                    const name = 'description';
+                    const value = historyContent;
+                    dispatch(change_task_modal({ name, value }));
+                    setvisibleEditor(false)
+                }}>Close</Button>
+            </div> : <div onClick={() => {
+                setvisibleEditor(!visibleEditor);
+            }}>{jsxDescription}</div>}
+
+        </div>
     }
 
     const tagRender = (props) => {
@@ -67,8 +113,9 @@ const ProjectDetail = (props) => {
         );
     };
 
-    const handleChange = ({name, value}) => {
-        dispatch(change_task_modal({name,value}));
+    const handleChange = ({ name, value }) => {
+        console.log('valua ne', value)
+        dispatch(change_task_modal({ name, value }));
     }
 
     useEffect(() => {
@@ -93,7 +140,7 @@ const ProjectDetail = (props) => {
 
             >
                 <Row>
-                    <Col span={16}>
+                    <Col span={12} offset={2}>
                         <Row>
                             <Col span={24}>
                                 <Divider orientation="left">Discription</Divider>
@@ -101,7 +148,7 @@ const ProjectDetail = (props) => {
                             </Col>
                         </Row>
                     </Col>
-                    <Col span={8}>
+                    <Col span={8} offset={2}>
                         <Col span={24}>
                             <Divider orientation="left">Status</Divider>
                             <Select
@@ -120,8 +167,8 @@ const ProjectDetail = (props) => {
                                     }
                                 })
                                 }
-                                onChange={(value,name) => {
-                                    
+                                onChange={(value, name) => {
+
                                     // c1 dung put 
                                     // const taskUpdateStatus ={
                                     //     taskId: taskDetailModal.taskId,
@@ -133,31 +180,47 @@ const ProjectDetail = (props) => {
 
                                     // c2 
                                     name = "statusId";
-                                    handleChange({name, value})
+                                    handleChange({ name, value })
                                 }}
-                                
+
                             />
                         </Col>
 
                         <Col span={24}>
                             <Divider orientation="left">Assignees</Divider>
+                            <Col span={24} className='mb-2'>
+                                {taskDetailModal.assigness.map((mem, index) => {
+                                    return <Tag key={index} className='m-1' color={`${color[index]}`}>{mem.name}<CloseOutlined  className='ml-2 pb-1'/></Tag>
+                                })}
+                            </Col>
                             <Select
                                 mode="multiple"
                                 showArrow
                                 tagRender={tagRender}
-                                defaultValue={[]}
+                                value={[]}
                                 style={{
                                     width: '100%',
                                 }}
-                                options={taskDetailModal.assigness.map((member, index) => {
+                                options={projectDetail.members?.filter((mem) => {
+                                    let index = taskDetailModal.assigness?.findIndex(us => us.id === mem.userId)
+                                    if (index !== -1) {
+                                        return false;
+                                    }
+                                    return true;
+                                }).map((member, index) => {
                                     return {
-                                        value: member.id,
+                                        value: member.userId,
                                         label: member.name
                                     }
                                 })}
-                                onChange={(value, options,name) => {
-                                    name = 'assigness'
-                                    handleChange({name, value})
+                                onChange={(value, option) => {
+                                    //    const name = 'assigness';
+                                   
+                                    let userSelect = projectDetail.members.find(mem => mem.userId == value)
+                                    userSelect = {...userSelect,id:userSelect.userId}
+                                     dispatch(change_members_detail_task(userSelect))
+                                    // console.log('op', option)
+
                                 }}
                             />
                         </Col>
@@ -184,9 +247,9 @@ const ProjectDetail = (props) => {
                                             }
                                         })
                                         }
-                                        onChange={(value, options,name) => {
+                                        onChange={(value, options, name) => {
                                             name = 'priorityId'
-                                            handleChange({name, value})
+                                            handleChange({ name, value })
                                         }}
                                     />
                                 </Col>
@@ -194,9 +257,9 @@ const ProjectDetail = (props) => {
                                 <Col span={11} offset={2}>
                                     <Divider orientation="left">Estimate</Divider>
                                     <Input allowClear name='originalEstimate' value={taskDetailModal.originalEstimate} onChange={(e) => {
-                                        const {name, value} = e.target;
-                                        handleChange({name, value})
-                                    }}/>
+                                        const { name, value } = e.target;
+                                        handleChange({ name, value })
+                                    }} />
                                 </Col>
 
                             </Row>
@@ -216,16 +279,16 @@ const ProjectDetail = (props) => {
                             <Col span={11}>
                                 <Divider orientation="left">Time spent</Divider>
                                 <Input name='timeTrackingSpent' value={taskDetailModal.timeTrackingSpent} onChange={(e) => {
-                                        const {name, value} = e.target;
-                                        handleChange({name, value})
-                                    }} />
+                                    const { name, value } = e.target;
+                                    handleChange({ name, value })
+                                }} />
                             </Col>
                             <Col span={11} offset={2}>
                                 <Divider orientation="left">Time Remaining</Divider>
                                 <Input name='timeTrackingRemaining' value={taskDetailModal.timeTrackingRemaining} onChange={(e) => {
-                                        const {name, value} = e.target;
-                                        handleChange({name, value})
-                                    }}/>
+                                    const { name, value } = e.target;
+                                    handleChange({ name, value })
+                                }} />
                             </Col>
 
                         </Row>

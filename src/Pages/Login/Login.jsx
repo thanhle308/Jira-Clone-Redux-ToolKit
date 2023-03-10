@@ -19,13 +19,13 @@ const Login = (props) => {
       <h2>Login</h2>
       <form onSubmit={handleSubmit}>
         <div className="user-box">
-          <input onChange={handleChange} type="text" name="email" required="" />
+          <input onChange={handleChange} type="text" name="email" required="" className='mt-3'/>
           <label>Email</label>
           <div>{errors.email ? (<div className='text-danger mb-3'>{errors.email}</div>) : null} </div>
         </div>
 
         <div className="user-box">
-          <input onChange={handleChange} type="password" name="password" required="" />
+          <input onChange={handleChange} type="password" name="password" required="" className='mt-3'/>
           <label>Password</label>
           <div>{errors.password ? (<div className='text-danger mb-3'>{errors.password}</div>) : null} </div>
         </div>
