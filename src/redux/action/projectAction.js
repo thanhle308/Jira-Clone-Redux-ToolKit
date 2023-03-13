@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { http } from '../../services/interceptor';
 import {
    assignUserProjectService,
@@ -23,7 +25,7 @@ import {
 import { notifiFunction } from '../../utils/Notification/notification';
 import { displayLoading, hideLoading } from '../reducer/loadingReducer';
 import { get_list_project, get_project_detail } from '../reducer/projectReducer';
-import { get_task_detail } from '../reducer/taskModalReducer';
+import { change_members_detail_task_add, change_members_detail_task_remove, change_task_modal, get_task_detail } from '../reducer/taskModalReducer';
 
 export const getAllProjectAction = () => {
    return async (dispatch) => {
@@ -40,13 +42,23 @@ export const getAllProjectAction = () => {
    };
 };
 
-export const getProjectDetailAction = (id) => {
+export const getProjectDetailAction = (id, type) => {
    return async (dispatch) => {
       try {
+         if (type !== 1) {
+            await dispatch(displayLoading())
+         }
+
          let result = await getProjectDetailService(id);
          await dispatch(get_project_detail(result));
+         if (type !== 1) {
+            await dispatch(hideLoading())
+         }
       } catch (error) {
          console.log(error);
+         if (type !== 1) {
+            await dispatch(hideLoading())
+         }
       }
    };
 };
@@ -158,9 +170,27 @@ export const createTaskAction = (data) => {
 };
 
 export const updateTaskAction = (data) => {
-   return async (dispatch) => {
+   return async (dispatch, getState) => {
       try {
-         let result = await updateTaskService(data);
+         // console.log(data)
+         if (data.actionType == 1) {
+            await dispatch(change_task_modal({ name: data.name, value: data.value }))
+         } else if (data.actionType == 2) {
+            await dispatch(change_members_detail_task_add(data.userSelect))
+         } else if (data.actionType == 3) {
+            await dispatch(change_members_detail_task_remove(data.userSelect))
+         }
+
+
+         const { taskDetailModal } = getState().taskModalReducer
+         const listUserAsign = taskDetailModal.assigness?.map((user, index) => {
+            return user.id
+         })
+         const taskDetailModalUpdate = { ...taskDetailModal, listUserAsign: listUserAsign }
+
+         console.log('taskDetailModal', taskDetailModal)
+         let result = await updateTaskService(taskDetailModalUpdate);
+         await dispatch(getProjectDetailAction(taskDetailModal.projectId, 1))
       } catch (error) {
          console.log(error);
       }

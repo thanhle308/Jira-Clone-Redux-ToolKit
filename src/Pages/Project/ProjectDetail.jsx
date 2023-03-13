@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Col, Row, Tag, Space, Button, Modal, Divider, Select, Input, Slider } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
-import { getProjectDetailAction, getTaskDetailAction, updateStatusAction } from '../../redux/action/projectAction';
+import { getProjectDetailAction, getTaskDetailAction, updateStatusAction, updateTaskAction } from '../../redux/action/projectAction';
 import parse from 'html-react-parser';
 import { getAllStatusAction } from '../../redux/action/statusAction';
 import { getAllPriorityAction } from '../../redux/action/priorityAction';
-import { change_members_detail_task, change_task_modal } from '../../redux/reducer/taskModalReducer';
+import { change_all_task_modal, change_members_detail_task, change_members_detail_task_add, change_members_detail_task_remove, change_task_modal } from '../../redux/reducer/taskModalReducer';
 import { Editor } from '@tinymce/tinymce-react';
 import { CloseOutlined } from '@ant-design/icons/lib/icons';
 
@@ -114,8 +114,8 @@ const ProjectDetail = (props) => {
     };
 
     const handleChange = ({ name, value }) => {
-        console.log('valua ne', value)
-        dispatch(change_task_modal({ name, value }));
+        // console.log('valua ne', value)
+        dispatch(updateTaskAction({ name, value ,actionType : '1' }));
     }
 
     useEffect(() => {
@@ -188,16 +188,21 @@ const ProjectDetail = (props) => {
 
                         <Col span={24}>
                             <Divider orientation="left">Assignees</Divider>
-                            <Col span={24} className='mb-2'>
+                            {/* <Col span={24} className='mb-2'>
                                 {taskDetailModal.assigness.map((mem, index) => {
-                                    return <Tag key={index} className='m-1' color={`${color[index]}`}>{mem.name}<CloseOutlined  className='ml-2 pb-1'/></Tag>
+                                    return <Tag key={index} className='m-1' color={`${color[index]}`}>{mem.name}<CloseOutlined className='ml-2 pb-1' /></Tag>
                                 })}
-                            </Col>
+                            </Col> */}
                             <Select
                                 mode="multiple"
                                 showArrow
                                 tagRender={tagRender}
-                                value={[]}
+                                value={taskDetailModal.assigness.map((mem,index) => {
+                                    return {
+                                        value: mem.id,
+                                        label: mem.name
+                                    }
+                                })}
                                 style={{
                                     width: '100%',
                                 }}
@@ -213,14 +218,24 @@ const ProjectDetail = (props) => {
                                         label: member.name
                                     }
                                 })}
-                                onChange={(value, option) => {
+                                onSelect={(value, option) => {
                                     //    const name = 'assigness';
-                                   
+                                    console.log('value',value)
                                     let userSelect = projectDetail.members.find(mem => mem.userId == value)
-                                    userSelect = {...userSelect,id:userSelect.userId}
-                                     dispatch(change_members_detail_task(userSelect))
+                                    userSelect = { ...userSelect, id: userSelect.userId }
+                                    // dispatch(change_members_detail_task_add(userSelect))
+                                    dispatch(updateTaskAction({userSelect,actionType : '2'} ))
                                     // console.log('op', option)
+                                }}
+                                onDeselect={(value, option) => {
+                                    //    const name = 'assigness';
+                                    console.log('value',value)
+                                    let userSelect = projectDetail.members.find(mem => mem.userId == value)
+                                    userSelect = { ...userSelect, userId: userSelect.userId }
+                                    // dispatch(change_members_detail_task_remove(userSelect))
+                                    dispatch(updateTaskAction({userSelect,actionType : '3'} ))
 
+                                    // console.log('op', option)
                                 }}
                             />
                         </Col>
@@ -237,9 +252,6 @@ const ProjectDetail = (props) => {
                                         value={taskDetailModal.priorityId}
                                         optionFilterProp="children"
                                         filterOption={(input, option) => (option?.label ?? '').includes(input)}
-                                        filterSort={(optionA, optionB) =>
-                                            (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                                        }
                                         options={listPriority.map((priority, index) => {
                                             return {
                                                 value: priority.priorityId,
