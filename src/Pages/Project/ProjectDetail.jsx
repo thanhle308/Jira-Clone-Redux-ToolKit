@@ -8,6 +8,7 @@ import { getAllPriorityAction } from '../../redux/action/priorityAction';
 import { change_all_task_modal, change_members_detail_task, change_members_detail_task_add, change_members_detail_task_remove, change_task_modal } from '../../redux/reducer/taskModalReducer';
 import { Editor } from '@tinymce/tinymce-react';
 import { CloseOutlined } from '@ant-design/icons/lib/icons';
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 
 
 const ProjectDetail = (props) => {
@@ -19,33 +20,74 @@ const ProjectDetail = (props) => {
     const [visibleEditor, setvisibleEditor] = useState(false);
     const [historyContent, sethistoryContent] = useState(taskDetailModal.description);
     const [content, setContent] = useState(taskDetailModal.description);
-    // console.log('taskDetailModal', taskDetailModal)
+    console.log('projectDetail', projectDetail)
     const dispatch = useDispatch();
 
 
     const [open, setOpen] = useState(false);
     const color = ["magenta", "purple", "cyan", "green"]
 
-    const ColumTask = () => {
-        return projectDetail.lstTask?.map((colum, index) => {
-            return <Col key={index} span={6} >
-                <Card title={<Tag color={`${color[index]}`}>{colum.statusName}</Tag>} bordered={true} style={{ backgroundColor: '#F5F5F5' }}>
-                    {colum.lstTaskDeTail.length > 0 ? (colum.lstTaskDeTail.map((task, index) => {
-                        return <Card className='mb-2' onClick={() => {
-                            dispatch(getTaskDetailAction(task.taskId))
-
-                            setOpen(true)
-                        }} key={index} title={task.taskName} bordered={true} style={{ backgroundColor: '#FFFFFF', cursor: 'pointer' }}>
-                            <Space size={[0, 8]} wrap>
-                                {task.taskTypeDetail.id === 1 ? <Tag color="#f50">{task.taskTypeDetail.taskType}</Tag> : <Tag color="#108ee9">{task.taskTypeDetail.taskType}</Tag>}
-                                <Tag color="#2db7f5">{task.priorityTask.priority}</Tag>
-                            </Space>
-                        </Card>
-                    })) : ''}
-                </Card>
-            </Col>
-        })
+    const handleDragEnd = (result) => {
+        let { destination, source } = result;
+        //Neu diem den khong ton tai thi return
+        if (!destination) {
+            return;
+        }
+        if (destination.index === source.index && destination.droppableId === source.droppableId) {
+            return;
+        }
+        let statusChange = {
+            'taskId': Number(result.draggableId),
+            'statusId': destination.droppableId,
+            'projectId': projectDetail?.id,
+        }
+        dispatch(updateStatusAction(statusChange))
     }
+
+    const ColumTask = () => {
+        return <DragDropContext onDragEnd={handleDragEnd} >
+            {
+                projectDetail.lstTask?.map((colum, index) => {
+                    return <Droppable key={index} droppableId={colum.statusId}>
+                        {(provided) => {
+                            return <Col ref={provided.innerRef} {...provided.droppableProps} key={index} span={6} >
+                                <Card title={<Tag color={`${color[index]}`}>{colum.statusName}</Tag>} bordered={true} style={{ backgroundColor: '#F5F5F5' }}>
+                                    {colum.lstTaskDeTail.length > 0 ? (colum.lstTaskDeTail.map((task, index) => {
+                                        return <Draggable key={task.taskId.toString()} index={index} draggableId={task.taskId.toString()} >
+                                            {(provided) => {
+                                                return <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                                                    <Card className='mb-2' onClick={() => {
+                                                        dispatch(getTaskDetailAction(task.taskId))
+                                                        console.log(task.taskId)
+                                                        setOpen(true)
+                                                    }} key={index} title={task.taskName} bordered={true} style={{ backgroundColor: '#FFFFFF' }}>
+                                                        <Space size={[0, 8]} wrap>
+                                                            {task.taskTypeDetail.id === 1 ? <Tag color="#f50">{task.taskTypeDetail.taskType}</Tag> : <Tag color="#108ee9">{task.taskTypeDetail.taskType}</Tag>}
+                                                            <Tag color="#2db7f5">{task.priorityTask.priority}</Tag>
+                                                        </Space>
+                                                    </Card>
+                                                </div>
+                                            }}
+                                        </Draggable>
+
+
+                                    })) : ''}
+
+                                </Card>
+
+                                {provided.placeholder}
+
+                            </Col>
+                        }}
+
+                    </Droppable>
+                })
+            }
+        </DragDropContext>
+    }
+
+
+
     const renderTaskDescription = () => {
         const jsxDescription = parse(taskDetailModal.description);
         return <div >
@@ -115,7 +157,7 @@ const ProjectDetail = (props) => {
 
     const handleChange = ({ name, value }) => {
         // console.log('valua ne', value)
-        dispatch(updateTaskAction({ name, value ,actionType : '1' }));
+        dispatch(updateTaskAction({ name, value, actionType: '1' }));
     }
 
     useEffect(() => {
@@ -197,7 +239,7 @@ const ProjectDetail = (props) => {
                                 mode="multiple"
                                 showArrow
                                 tagRender={tagRender}
-                                value={taskDetailModal.assigness.map((mem,index) => {
+                                value={taskDetailModal.assigness.map((mem, index) => {
                                     return {
                                         value: mem.id,
                                         label: mem.name
@@ -220,20 +262,20 @@ const ProjectDetail = (props) => {
                                 })}
                                 onSelect={(value, option) => {
                                     //    const name = 'assigness';
-                                    console.log('value',value)
+                                    console.log('value', value)
                                     let userSelect = projectDetail.members.find(mem => mem.userId == value)
                                     userSelect = { ...userSelect, id: userSelect.userId }
                                     // dispatch(change_members_detail_task_add(userSelect))
-                                    dispatch(updateTaskAction({userSelect,actionType : '2'} ))
+                                    dispatch(updateTaskAction({ userSelect, actionType: '2' }))
                                     // console.log('op', option)
                                 }}
                                 onDeselect={(value, option) => {
                                     //    const name = 'assigness';
-                                    console.log('value',value)
+                                    console.log('value', value)
                                     let userSelect = projectDetail.members.find(mem => mem.userId == value)
                                     userSelect = { ...userSelect, userId: userSelect.userId }
                                     // dispatch(change_members_detail_task_remove(userSelect))
-                                    dispatch(updateTaskAction({userSelect,actionType : '3'} ))
+                                    dispatch(updateTaskAction({ userSelect, actionType: '3' }))
 
                                     // console.log('op', option)
                                 }}

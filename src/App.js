@@ -10,6 +10,7 @@ import DrawerHOC from './components/HOC/DrawerHOC';
 import Register from './Pages/Register/Register';
 import FormCreateTask from './components/Forms/FormTask/FormCreateTask';
 import ProjectDetail from './Pages/Project/ProjectDetail';
+import DragAndDropDnD from './components/DragAndDropDnD/DragAndDropDnD';
 export const history = createBrowserHistory();
 function App() {
    return (
@@ -34,6 +35,10 @@ function App() {
             <HomeTemplate
                path='/projectdetail/:projectId'
                component={ProjectDetail}
+            />
+            <HomeTemplate
+               path='/demo'
+               component={DragAndDropDnD}
             />
             <HomeTemplate
                path='/'

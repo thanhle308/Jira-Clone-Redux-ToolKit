@@ -67,6 +67,7 @@ export const getTaskDetailAction = (id) => {
    return async (dispatch) => {
       try {
          let result = await getTaskDetailService(id);
+
          await dispatch(get_task_detail(result));
       } catch (error) {
          console.log(error);
@@ -216,8 +217,7 @@ export const updateStatusAction = (data) => {
       try {
          console.log('data', data)
          let result = await updateStatusService(data);
-         await dispatch(getTaskDetailAction(data.taskId))
-         await dispatch(getProjectDetailAction(data.projectId))
+         await dispatch(getProjectDetailAction(data.projectId, 1))
       } catch (error) {
          console.log(error);
       }
