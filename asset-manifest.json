@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "/jirabug/static/css/main.f1451cf8.css",
-    "main.js": "/jirabug/static/js/main.9b638929.js",
-    "static/js/787.dedae3d2.chunk.js": "/jirabug/static/js/787.dedae3d2.chunk.js",
-    "static/media/login.jpg": "/jirabug/static/media/login.f56f4d878adc97cab3a2.jpg",
-    "static/media/jira.png": "/jirabug/static/media/jira.627b89f98b17645668b5.png",
-    "index.html": "/jirabug/index.html",
-    "main.f1451cf8.css.map": "/jirabug/static/css/main.f1451cf8.css.map",
-    "main.9b638929.js.map": "/jirabug/static/js/main.9b638929.js.map",
-    "787.dedae3d2.chunk.js.map": "/jirabug/static/js/787.dedae3d2.chunk.js.map"
+    "main.css": "/Jira-Clone-Redux-ToolKit/static/css/main.f1451cf8.css",
+    "main.js": "/Jira-Clone-Redux-ToolKit/static/js/main.386bda4d.js",
+    "static/js/787.dedae3d2.chunk.js": "/Jira-Clone-Redux-ToolKit/static/js/787.dedae3d2.chunk.js",
+    "static/media/login.jpg": "/Jira-Clone-Redux-ToolKit/static/media/login.f56f4d878adc97cab3a2.jpg",
+    "static/media/jira.png": "/Jira-Clone-Redux-ToolKit/static/media/jira.627b89f98b17645668b5.png",
+    "index.html": "/Jira-Clone-Redux-ToolKit/index.html",
+    "main.f1451cf8.css.map": "/Jira-Clone-Redux-ToolKit/static/css/main.f1451cf8.css.map",
+    "main.386bda4d.js.map": "/Jira-Clone-Redux-ToolKit/static/js/main.386bda4d.js.map",
+    "787.dedae3d2.chunk.js.map": "/Jira-Clone-Redux-ToolKit/static/js/787.dedae3d2.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.f1451cf8.css",
-    "static/js/main.9b638929.js"
+    "static/js/main.386bda4d.js"
   ]
 }
